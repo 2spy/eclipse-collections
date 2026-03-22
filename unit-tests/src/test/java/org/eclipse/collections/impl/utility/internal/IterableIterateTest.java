@@ -20,6 +20,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.collections.api.block.function.Function3;
+import org.eclipse.collections.api.block.predicate.Predicate;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure;
 import org.eclipse.collections.api.factory.Lists;
 import org.eclipse.collections.api.list.ImmutableList;
@@ -530,7 +531,7 @@ public class IterableIterateTest
     @Test
     public void removeIf()
     {
-        java.util.function.Predicate<Integer> isNull = each -> each == null;
+        Predicate<Integer> isNull = each -> each == null;
         MutableList<Integer> objects = mList(1, 2, 3, null);
         Iterable<Integer> iterable = new IterableAdapter<>(objects);
         IterableIterate.removeIf(iterable, isNull);

@@ -19,6 +19,7 @@ import java.util.Optional;
 
 import org.eclipse.collections.api.RichIterable;
 import org.eclipse.collections.api.block.function.Function2;
+import org.eclipse.collections.api.block.predicate.Predicate;
 import org.eclipse.collections.api.block.predicate.Predicate2;
 import org.eclipse.collections.api.block.procedure.Procedure;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure;
@@ -1072,8 +1073,8 @@ public class ListIterateTest
         MutableList<Integer> list1 = FastList.newListWith(1, 2, 3, 4, 5);
         List<Integer> list2 = new LinkedList<>(list1);
 
-        java.util.function.Predicate<Integer> isEven = each -> each % 2 == 0;
-        java.util.function.Predicate<Integer> isZero = each -> each == 0;
+        Predicate<Integer> isEven = each -> each % 2 == 0;
+        Predicate<Integer> isZero = each -> each == 0;
         assertTrue(ListIterate.removeIf(list1, isEven));
         MutableList<Integer> expected = Lists.mutable.of(1, 3, 5);
         assertEquals(expected, list1);

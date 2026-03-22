@@ -33,6 +33,7 @@ import org.eclipse.collections.api.block.function.Function;
 import org.eclipse.collections.api.block.function.Function0;
 import org.eclipse.collections.api.block.function.Function2;
 import org.eclipse.collections.api.block.function.Function3;
+import org.eclipse.collections.api.block.predicate.Predicate;
 import org.eclipse.collections.api.block.procedure.Procedure2;
 import org.eclipse.collections.api.collection.primitive.MutableBooleanCollection;
 import org.eclipse.collections.api.collection.primitive.MutableByteCollection;
@@ -1612,7 +1613,7 @@ public class IterateTest
 
     private void assertRemoveIfFromList(List<Integer> newIntegers)
     {
-        java.util.function.Predicate<Integer> isEven = each -> each % 2 == 0;
+        Predicate<Integer> isEven = each -> each % 2 == 0;
         assertTrue(Iterate.removeIf(newIntegers, isEven));
         assertFalse(Iterate.removeIf(FastList.newListWith(1, 3, 5), isEven));
         assertFalse(Iterate.removeIf(FastList.newList(), isEven));
@@ -1647,7 +1648,7 @@ public class IterateTest
     public void removeIfFromSet()
     {
         MutableSet<Integer> integers = Interval.toSet(1, 5);
-        java.util.function.Predicate<Integer> isEven = each -> each % 2 == 0;
+        Predicate<Integer> isEven = each -> each % 2 == 0;
         assertTrue(Iterate.removeIf(integers, isEven));
         Verify.assertContainsAll(integers, 1, 3, 5);
         Verify.assertSize(3, integers);

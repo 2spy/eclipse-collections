@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.eclipse.collections.api.RichIterable;
 import org.eclipse.collections.api.block.function.Function2;
+import org.eclipse.collections.api.block.predicate.Predicate;
 import org.eclipse.collections.api.block.predicate.Predicate2;
 import org.eclipse.collections.api.block.procedure.Procedure2;
 import org.eclipse.collections.api.factory.Lists;
@@ -82,9 +83,9 @@ public class RandomAccessListIterateTest
     @Test
     public void removeIf()
     {
-        java.util.function.Predicate<Integer> greaterThan1 = each -> each > 1;
-        java.util.function.Predicate<Integer> greaterThan0 = each -> each > 0;
-        java.util.function.Predicate<Integer> greaterThan4 = each -> each > 4;
+        Predicate<Integer> greaterThan1 = each -> each > 1;
+        Predicate<Integer> greaterThan0 = each -> each > 0;
+        Predicate<Integer> greaterThan4 = each -> each > 4;
         assertTrue(RandomAccessListIterate.removeIf(FastList.newListWith(1, 2, 3), greaterThan1));
         assertTrue(RandomAccessListIterate.removeIf(FastList.newListWith(1, 2, 3), greaterThan0));
         assertFalse(RandomAccessListIterate.removeIf(FastList.newListWith(1, 2, 3), greaterThan4));

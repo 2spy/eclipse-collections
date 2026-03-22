@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.eclipse.collections.api.block.function.Function;
 import org.eclipse.collections.api.block.function.Function3;
+import org.eclipse.collections.api.block.predicate.Predicate;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure;
 import org.eclipse.collections.api.factory.Lists;
 import org.eclipse.collections.api.list.MutableList;
@@ -1281,7 +1282,7 @@ public class ArrayListIterateTest
     @Test
     public void removeIf()
     {
-        java.util.function.Predicate<Integer> isNull = each -> each == null;
+        Predicate<Integer> isNull = each -> each == null;
         ArrayList<Integer> objects = this.newArrayList(1, 2, 3, null);
         ArrayListIterate.removeIf(objects, isNull);
         Verify.assertSize(3, objects);
