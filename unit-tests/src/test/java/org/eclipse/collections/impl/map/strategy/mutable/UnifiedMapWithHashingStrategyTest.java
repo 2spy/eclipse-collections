@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.collections.api.block.HashingStrategy;
@@ -83,6 +84,24 @@ public class UnifiedMapWithHashingStrategyTest extends UnifiedMapTestCase
         public boolean equals(String object1, String object2)
         {
             return object1.equals(object2);
+        }
+    });
+
+    /**
+     * Same hash for every key; equality is standard. Forces heavy use of internal collision chains.
+     */
+    private static final HashingStrategy<Integer> CONSTANT_HASH_INTEGER_STRATEGY = HashingStrategies.nullSafeHashingStrategy(new HashingStrategy<Integer>()
+    {
+        @Override
+        public int computeHashCode(Integer object)
+        {
+            return 0;
+        }
+
+        @Override
+        public boolean equals(Integer object1, Integer object2)
+        {
+            return Objects.equals(object1, object2);
         }
     });
 
@@ -1011,6 +1030,38 @@ public class UnifiedMapWithHashingStrategyTest extends UnifiedMapTestCase
         Interval.oneTo(3).each(each -> map.removeKey(each.toString()));
         assertTrue(map.trimToSize());
         assertEquals(5, map.size());
+    }
+
+    @Test
+    public void forcedCollisionChain_allKeysRetrievable()
+    {
+        UnifiedMapWithHashingStrategy<Integer, String> map = UnifiedMapWithHashingStrategy.newMap(CONSTANT_HASH_INTEGER_STRATEGY);
+        int n = 50;
+        for (int i = 0; i < n; i++)
+        {
+            assertNull(map.put(i, "v" + i));
+        }
+        assertEquals(n, map.size());
+        for (int i = 0; i < n; i++)
+        {
+            assertEquals("v" + i, map.get(i));
+        }
+    }
+
+    @Test
+    public void constantHashStrategy_insertMany_survivesRehash()
+    {
+        UnifiedMapWithHashingStrategy<Integer, Integer> map = UnifiedMapWithHashingStrategy.newMap(CONSTANT_HASH_INTEGER_STRATEGY);
+        int n = 200;
+        for (int i = 0; i < n; i++)
+        {
+            assertNull(map.put(i, i * i));
+        }
+        assertEquals(n, map.size());
+        for (int i = 0; i < n; i++)
+        {
+            assertEquals(i * i, map.get(i).intValue());
+        }
     }
 
     @Override
