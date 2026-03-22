@@ -116,6 +116,8 @@ public class UnifiedMap<K, V> extends AbstractMutableMap<K, V>
 
     protected static final int DEFAULT_INITIAL_CAPACITY = 8;
 
+    private static final int INITIAL_CHAIN_CAPACITY = 4;
+
     private static final long serialVersionUID = 1L;
 
     protected transient Object[] table;
@@ -392,7 +394,7 @@ public class UnifiedMap<K, V> extends AbstractMutableMap<K, V>
                     return result;
                 }
             }
-            Object[] newChain = new Object[chain.length + 4];
+            Object[] newChain = new Object[chain.length + INITIAL_CHAIN_CAPACITY];
             System.arraycopy(chain, 0, newChain, 0, chain.length);
             this.table[index + 1] = newChain;
             newChain[chain.length] = UnifiedMap.toSentinelIfNull(key);
@@ -403,7 +405,7 @@ public class UnifiedMap<K, V> extends AbstractMutableMap<K, V>
             }
             return null;
         }
-        Object[] newChain = new Object[4];
+        Object[] newChain = new Object[INITIAL_CHAIN_CAPACITY];
         newChain[0] = this.table[index];
         newChain[1] = this.table[index + 1];
         newChain[2] = UnifiedMap.toSentinelIfNull(key);
@@ -466,7 +468,7 @@ public class UnifiedMap<K, V> extends AbstractMutableMap<K, V>
                     return result;
                 }
             }
-            Object[] newChain = new Object[chain.length + 4];
+            Object[] newChain = new Object[chain.length + INITIAL_CHAIN_CAPACITY];
             System.arraycopy(chain, 0, newChain, 0, chain.length);
             V result = function.valueOf(factory.value());
             this.table[index + 1] = newChain;
@@ -478,7 +480,7 @@ public class UnifiedMap<K, V> extends AbstractMutableMap<K, V>
             }
             return result;
         }
-        Object[] newChain = new Object[4];
+        Object[] newChain = new Object[INITIAL_CHAIN_CAPACITY];
         newChain[0] = this.table[index];
         newChain[1] = this.table[index + 1];
         V result = function.valueOf(factory.value());
@@ -547,7 +549,7 @@ public class UnifiedMap<K, V> extends AbstractMutableMap<K, V>
                     return result;
                 }
             }
-            Object[] newChain = new Object[chain.length + 4];
+            Object[] newChain = new Object[chain.length + INITIAL_CHAIN_CAPACITY];
             System.arraycopy(chain, 0, newChain, 0, chain.length);
             V result = function.value(factory.value(), parameter);
             this.table[index + 1] = newChain;
@@ -559,7 +561,7 @@ public class UnifiedMap<K, V> extends AbstractMutableMap<K, V>
             }
             return result;
         }
-        Object[] newChain = new Object[4];
+        Object[] newChain = new Object[INITIAL_CHAIN_CAPACITY];
         newChain[0] = this.table[index];
         newChain[1] = this.table[index + 1];
         V result = function.value(factory.value(), parameter);
@@ -636,7 +638,7 @@ public class UnifiedMap<K, V> extends AbstractMutableMap<K, V>
                     return newValue;
                 }
             }
-            Object[] newChain = new Object[chain.length + 4];
+            Object[] newChain = new Object[chain.length + INITIAL_CHAIN_CAPACITY];
             System.arraycopy(chain, 0, newChain, 0, chain.length);
             this.table[index + 1] = newChain;
             newChain[chain.length] = UnifiedMap.toSentinelIfNull(key);
@@ -647,7 +649,7 @@ public class UnifiedMap<K, V> extends AbstractMutableMap<K, V>
             }
             return value;
         }
-        Object[] newChain = new Object[4];
+        Object[] newChain = new Object[INITIAL_CHAIN_CAPACITY];
         newChain[0] = this.table[index];
         newChain[1] = this.table[index + 1];
         newChain[2] = UnifiedMap.toSentinelIfNull(key);
@@ -714,7 +716,7 @@ public class UnifiedMap<K, V> extends AbstractMutableMap<K, V>
             if (i == chain.length)
             {
                 result = function.value();
-                Object[] newChain = new Object[chain.length + 4];
+                Object[] newChain = new Object[chain.length + INITIAL_CHAIN_CAPACITY];
                 System.arraycopy(chain, 0, newChain, 0, chain.length);
                 newChain[i] = UnifiedMap.toSentinelIfNull(key);
                 newChain[i + 1] = result;
@@ -728,7 +730,7 @@ public class UnifiedMap<K, V> extends AbstractMutableMap<K, V>
         else
         {
             result = function.value();
-            Object[] newChain = new Object[4];
+            Object[] newChain = new Object[INITIAL_CHAIN_CAPACITY];
             newChain[0] = this.table[index];
             newChain[1] = this.table[index + 1];
             newChain[2] = UnifiedMap.toSentinelIfNull(key);
@@ -793,7 +795,7 @@ public class UnifiedMap<K, V> extends AbstractMutableMap<K, V>
             }
             if (i == chain.length)
             {
-                Object[] newChain = new Object[chain.length + 4];
+                Object[] newChain = new Object[chain.length + INITIAL_CHAIN_CAPACITY];
                 System.arraycopy(chain, 0, newChain, 0, chain.length);
                 newChain[i] = UnifiedMap.toSentinelIfNull(key);
                 newChain[i + 1] = value;
@@ -806,7 +808,7 @@ public class UnifiedMap<K, V> extends AbstractMutableMap<K, V>
         }
         else
         {
-            Object[] newChain = new Object[4];
+            Object[] newChain = new Object[INITIAL_CHAIN_CAPACITY];
             newChain[0] = this.table[index];
             newChain[1] = this.table[index + 1];
             newChain[2] = UnifiedMap.toSentinelIfNull(key);
@@ -874,7 +876,7 @@ public class UnifiedMap<K, V> extends AbstractMutableMap<K, V>
             if (i == chain.length)
             {
                 result = function.valueOf(parameter);
-                Object[] newChain = new Object[chain.length + 4];
+                Object[] newChain = new Object[chain.length + INITIAL_CHAIN_CAPACITY];
                 System.arraycopy(chain, 0, newChain, 0, chain.length);
                 newChain[i] = UnifiedMap.toSentinelIfNull(key);
                 newChain[i + 1] = result;
@@ -888,7 +890,7 @@ public class UnifiedMap<K, V> extends AbstractMutableMap<K, V>
         else
         {
             result = function.valueOf(parameter);
-            Object[] newChain = new Object[4];
+            Object[] newChain = new Object[INITIAL_CHAIN_CAPACITY];
             newChain[0] = this.table[index];
             newChain[1] = this.table[index + 1];
             newChain[2] = UnifiedMap.toSentinelIfNull(key);
@@ -1666,14 +1668,14 @@ public class UnifiedMap<K, V> extends AbstractMutableMap<K, V>
                     return;
                 }
             }
-            Object[] newChain = new Object[chain.length + 4];
+            Object[] newChain = new Object[chain.length + INITIAL_CHAIN_CAPACITY];
             System.arraycopy(chain, 0, newChain, 0, chain.length);
             this.table[index + 1] = newChain;
             newChain[chain.length] = UnifiedMap.toSentinelIfNull(key);
             newChain[chain.length + 1] = value;
             return;
         }
-        Object[] newChain = new Object[4];
+        Object[] newChain = new Object[INITIAL_CHAIN_CAPACITY];
         newChain[0] = this.table[index];
         newChain[1] = this.table[index + 1];
         newChain[2] = key;
