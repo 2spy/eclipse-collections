@@ -1425,7 +1425,7 @@ public class UnifiedMap<K, V> extends AbstractMutableMap<K, V>
         return null;
     }
 
-    private void overwriteWithLastElementFromChain(Object[] chain, int index, int i)
+    void overwriteWithLastElementFromChain(Object[] chain, int index, int i)
     {
         int j = chain.length - 2;
         for (; j > i; j -= 2)
@@ -2350,7 +2350,7 @@ public class UnifiedMap<K, V> extends AbstractMutableMap<K, V>
         }
     }
 
-    private static boolean nullSafeEquals(Object value, Object other)
+    static boolean nullSafeEquals(Object value, Object other)
     {
         if (value == null)
         {
@@ -3112,7 +3112,7 @@ public class UnifiedMap<K, V> extends AbstractMutableMap<K, V>
         }
     }
 
-    private K nonSentinel(Object key)
+    K nonSentinel(Object key)
     {
         return key == NULL_KEY ? null : (K) key;
     }
@@ -3126,7 +3126,7 @@ public class UnifiedMap<K, V> extends AbstractMutableMap<K, V>
         return key;
     }
 
-    private boolean nonNullTableObjectEquals(Object cur, K key)
+    boolean nonNullTableObjectEquals(Object cur, K key)
     {
         return cur == key || (cur == NULL_KEY ? key == null : cur.equals(key));
     }
