@@ -56,7 +56,7 @@ public final class Multimaps
         /**
          * @deprecated Use {@link #sortedBag} instead.
          */
-        @Deprecated
+        @Deprecated(since = "12.0.0", forRemoval = false)
         public final ImmutableSortedBagMultimapFactory multimap = this.sortedBag;
 
         private ImmutableMultimaps()

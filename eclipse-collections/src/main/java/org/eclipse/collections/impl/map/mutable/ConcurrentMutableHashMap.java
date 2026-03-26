@@ -41,7 +41,7 @@ import org.eclipse.collections.impl.utility.internal.IterableIterate;
  * @see org.eclipse.collections.impl.map.mutable.ConcurrentHashMap
  * @deprecated since 2.0
  */
-@Deprecated
+@Deprecated(since = "2.0", forRemoval = false)
 public final class ConcurrentMutableHashMap<K, V>
         extends AbstractMutableMap<K, V>
         implements ConcurrentMutableMap<K, V>, Serializable
