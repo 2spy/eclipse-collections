@@ -104,16 +104,6 @@ public class ImmutableArrayListTest extends AbstractImmutableListTestCase
         return ImmutableArrayList.newListWith(elements);
     }
 
-    private ImmutableList<Integer> newListWith(int one, int two)
-    {
-        return ImmutableArrayList.newListWith(one, two);
-    }
-
-    private ImmutableList<Integer> newListWith(int one, int two, int three)
-    {
-        return ImmutableArrayList.newListWith(one, two, three);
-    }
-
     private ImmutableList<Integer> newListWith(int... littleElements)
     {
         Integer[] bigElements = new Integer[littleElements.length];

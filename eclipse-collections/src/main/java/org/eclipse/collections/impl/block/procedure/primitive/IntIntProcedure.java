@@ -19,7 +19,7 @@ import java.io.Serializable;
  * @deprecated since 3.0 use {@link org.eclipse.collections.api.block.procedure.primitive.IntIntProcedure}
  */
 @FunctionalInterface
-@Deprecated
+@Deprecated(since = "3.0")
 public interface IntIntProcedure extends Serializable
 {
     void value(int each, int index);
