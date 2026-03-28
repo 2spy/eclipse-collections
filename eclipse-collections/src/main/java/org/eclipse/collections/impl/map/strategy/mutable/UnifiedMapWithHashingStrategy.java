@@ -895,60 +895,71 @@ public class UnifiedMapWithHashingStrategy<K, V> extends AbstractMutableMap<K, V
 
     private <P> V chainedGetIfAbsentPutWith(K key, int index, Function<? super P, ? extends V> function, P parameter)
     {
-        V result = null;
-        if (this.table[index] == CHAINED_KEY)
+        if (this.table[index] != CHAINED_KEY)
         {
-            Object[] chain = (Object[]) this.table[index + 1];
-            int i = 0;
-            for (; i < chain.length; i += 2)
+            return this.createChainAndGetIfAbsentPutWith(key, index, function, parameter);
+        }
+        return this.getIfAbsentPutWithFromChain(key, index, function, parameter);
+    }
+
+    private <P> V getIfAbsentPutWithFromChain(K key, int index, Function<? super P, ? extends V> function, P parameter)
+    {
+        Object[] chain = (Object[]) this.table[index + 1];
+        for (int chainIndex = 0; chainIndex < chain.length; chainIndex += 2)
+        {
+            if (chain[chainIndex] == null)
             {
-                if (chain[i] == null)
-                {
-                    result = function.valueOf(parameter);
-                    chain[i] = UnifiedMapWithHashingStrategy.toSentinelIfNull(key);
-                    chain[i + 1] = result;
-                    if (++this.occupied > this.maxSize)
-                    {
-                        this.rehash(this.table.length);
-                    }
-                    break;
-                }
-                if (this.nonNullTableObjectEquals(chain[i], key))
-                {
-                    result = (V) chain[i + 1];
-                    break;
-                }
+                return this.addValueInChainAt(chain, index, chainIndex, key, function, parameter);
             }
-            if (i == chain.length)
+            if (this.nonNullTableObjectEquals(chain[chainIndex], key))
             {
-                result = function.valueOf(parameter);
-                Object[] newChain = new Object[chain.length + 4];
-                System.arraycopy(chain, 0, newChain, 0, chain.length);
-                newChain[i] = UnifiedMapWithHashingStrategy.toSentinelIfNull(key);
-                newChain[i + 1] = result;
-                this.table[index + 1] = newChain;
-                if (++this.occupied > this.maxSize)
-                {
-                    this.rehash(this.table.length);
-                }
+                return (V) chain[chainIndex + 1];
             }
         }
-        else
-        {
-            result = function.valueOf(parameter);
-            Object[] newChain = new Object[4];
-            newChain[0] = this.table[index];
-            newChain[1] = this.table[index + 1];
-            newChain[2] = UnifiedMapWithHashingStrategy.toSentinelIfNull(key);
-            newChain[3] = result;
-            this.table[index] = CHAINED_KEY;
-            this.table[index + 1] = newChain;
-            if (++this.occupied > this.maxSize)
-            {
-                this.rehash(this.table.length);
-            }
-        }
+        return this.expandChainAndGetIfAbsentPutWith(chain, index, key, function, parameter);
+    }
+
+    private <P> V addValueInChainAt(Object[] chain, int index, int chainIndex, K key, Function<? super P, ? extends V> function, P parameter)
+    {
+        V result = function.valueOf(parameter);
+        chain[chainIndex] = UnifiedMapWithHashingStrategy.toSentinelIfNull(key);
+        chain[chainIndex + 1] = result;
+        this.incrementOccupiedAndRehashIfNeeded();
         return result;
+    }
+
+    private <P> V expandChainAndGetIfAbsentPutWith(Object[] chain, int index, K key, Function<? super P, ? extends V> function, P parameter)
+    {
+        V result = function.valueOf(parameter);
+        Object[] newChain = new Object[chain.length + 4];
+        System.arraycopy(chain, 0, newChain, 0, chain.length);
+        newChain[chain.length] = UnifiedMapWithHashingStrategy.toSentinelIfNull(key);
+        newChain[chain.length + 1] = result;
+        this.table[index + 1] = newChain;
+        this.incrementOccupiedAndRehashIfNeeded();
+        return result;
+    }
+
+    private <P> V createChainAndGetIfAbsentPutWith(K key, int index, Function<? super P, ? extends V> function, P parameter)
+    {
+        V result = function.valueOf(parameter);
+        Object[] newChain = new Object[4];
+        newChain[0] = this.table[index];
+        newChain[1] = this.table[index + 1];
+        newChain[2] = UnifiedMapWithHashingStrategy.toSentinelIfNull(key);
+        newChain[3] = result;
+        this.table[index] = CHAINED_KEY;
+        this.table[index + 1] = newChain;
+        this.incrementOccupiedAndRehashIfNeeded();
+        return result;
+    }
+
+    private void incrementOccupiedAndRehashIfNeeded()
+    {
+        if (++this.occupied > this.maxSize)
+        {
+            this.rehash(this.table.length);
+        }
     }
 
     public int getCollidingBuckets()
@@ -1220,38 +1231,44 @@ public class UnifiedMapWithHashingStrategy<K, V> extends AbstractMutableMap<K, V
             }
             if (cur == CHAINED_KEY)
             {
-                Object[] chain = (Object[]) this.table[index + 1];
-                for (int chIndex = 0; chIndex < chain.length; )
-                {
-                    if (chain[chIndex] == null)
-                    {
-                        break;
-                    }
-                    K key = this.nonSentinel(chain[chIndex]);
-                    V value = (V) chain[chIndex + 1];
-                    if (predicate.accept(key, value))
-                    {
-                        this.overwriteWithLastElementFromChain(chain, index, chIndex);
-                    }
-                    else
-                    {
-                        chIndex += 2;
-                    }
-                }
+                this.removeIfFromChain((Object[]) this.table[index + 1], index, predicate);
             }
             else
             {
-                K key = this.nonSentinel(cur);
-                V value = (V) this.table[index + 1];
-                if (predicate.accept(key, value))
-                {
-                    this.table[index] = null;
-                    this.table[index + 1] = null;
-                    this.occupied--;
-                }
+                this.removeIfFromSingleEntry(cur, index, predicate);
             }
         }
         return previousOccupied > this.occupied;
+    }
+
+    private void removeIfFromChain(Object[] chain, int tableIndex, Predicate2<? super K, ? super V> predicate)
+    {
+        int chainIndex = 0;
+        while (chainIndex < chain.length && chain[chainIndex] != null)
+        {
+            K key = this.nonSentinel(chain[chainIndex]);
+            V value = (V) chain[chainIndex + 1];
+            if (predicate.accept(key, value))
+            {
+                this.overwriteWithLastElementFromChain(chain, tableIndex, chainIndex);
+            }
+            else
+            {
+                chainIndex += 2;
+            }
+        }
+    }
+
+    private void removeIfFromSingleEntry(Object cur, int index, Predicate2<? super K, ? super V> predicate)
+    {
+        K key = this.nonSentinel(cur);
+        V value = (V) this.table[index + 1];
+        if (predicate.accept(key, value))
+        {
+            this.table[index] = null;
+            this.table[index + 1] = null;
+            this.occupied--;
+        }
     }
 
     private void chainedForEachEntry(Object[] chain, Procedure2<? super K, ? super V> procedure)
