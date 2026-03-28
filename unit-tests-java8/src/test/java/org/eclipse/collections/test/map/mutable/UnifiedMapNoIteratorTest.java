@@ -15,6 +15,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.Spliterator;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import org.eclipse.collections.api.map.MutableMap;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
@@ -172,46 +175,267 @@ public class UnifiedMapNoIteratorTest implements MutableMapTestCase, NoIteratorT
         @Override
         public Set<Entry<K, V>> entrySet()
         {
-            return new EntrySetNoIterator();
+            return new NoIteratorSet<>(super.entrySet());
         }
 
         @Override
         public Set<K> keySet()
         {
-            return new KeySetNoIterator();
+            return new NoIteratorSet<>(super.keySet());
         }
 
         @Override
         public Collection<V> values()
         {
-            return new ValuesCollectionNoIterator();
+            return new NoIteratorCollection<>(super.values());
+        }
+    }
+
+    private static final class NoIteratorSet<E> implements Set<E>
+    {
+        private final Set<E> delegate;
+
+        private NoIteratorSet(Set<E> delegate)
+        {
+            this.delegate = delegate;
         }
 
-        public class EntrySetNoIterator extends EntrySet
+        @Override
+        public int size()
         {
-            @Override
-            public Iterator<Entry<K, V>> iterator()
-            {
-                throw new AssertionError("No iteration patterns should delegate to iterator()");
-            }
+            return this.delegate.size();
         }
 
-        public class KeySetNoIterator extends KeySet
+        @Override
+        public boolean isEmpty()
         {
-            @Override
-            public Iterator<K> iterator()
-            {
-                throw new AssertionError("No iteration patterns should delegate to iterator()");
-            }
+            return this.delegate.isEmpty();
         }
 
-        public class ValuesCollectionNoIterator extends ValuesCollection
+        @Override
+        public boolean contains(Object o)
         {
-            @Override
-            public Iterator<V> iterator()
-            {
-                throw new AssertionError("No iteration patterns should delegate to iterator()");
-            }
+            return this.delegate.contains(o);
+        }
+
+        @Override
+        public void forEach(Consumer<? super E> action)
+        {
+            this.delegate.forEach(action);
+        }
+
+        @Override
+        public Spliterator<E> spliterator()
+        {
+            return this.delegate.spliterator();
+        }
+
+        @Override
+        public boolean removeIf(Predicate<? super E> filter)
+        {
+            return this.delegate.removeIf(filter);
+        }
+
+        @Override
+        public Iterator<E> iterator()
+        {
+            throw new AssertionError("No iteration patterns should delegate to iterator()");
+        }
+
+        @Override
+        public Object[] toArray()
+        {
+            return this.delegate.toArray();
+        }
+
+        @Override
+        public <T> T[] toArray(T[] a)
+        {
+            return this.delegate.toArray(a);
+        }
+
+        @Override
+        public boolean add(E e)
+        {
+            return this.delegate.add(e);
+        }
+
+        @Override
+        public boolean remove(Object o)
+        {
+            return this.delegate.remove(o);
+        }
+
+        @Override
+        public boolean containsAll(Collection<?> c)
+        {
+            return this.delegate.containsAll(c);
+        }
+
+        @Override
+        public boolean addAll(Collection<? extends E> c)
+        {
+            return this.delegate.addAll(c);
+        }
+
+        @Override
+        public boolean retainAll(Collection<?> c)
+        {
+            return this.delegate.retainAll(c);
+        }
+
+        @Override
+        public boolean removeAll(Collection<?> c)
+        {
+            return this.delegate.removeAll(c);
+        }
+
+        @Override
+        public void clear()
+        {
+            this.delegate.clear();
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            return this.delegate.equals(obj);
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return this.delegate.hashCode();
+        }
+
+        @Override
+        public String toString()
+        {
+            return this.delegate.toString();
+        }
+    }
+
+    private static final class NoIteratorCollection<E> implements Collection<E>
+    {
+        private final Collection<E> delegate;
+
+        private NoIteratorCollection(Collection<E> delegate)
+        {
+            this.delegate = delegate;
+        }
+
+        @Override
+        public int size()
+        {
+            return this.delegate.size();
+        }
+
+        @Override
+        public boolean isEmpty()
+        {
+            return this.delegate.isEmpty();
+        }
+
+        @Override
+        public boolean contains(Object o)
+        {
+            return this.delegate.contains(o);
+        }
+
+        @Override
+        public void forEach(Consumer<? super E> action)
+        {
+            this.delegate.forEach(action);
+        }
+
+        @Override
+        public Spliterator<E> spliterator()
+        {
+            return this.delegate.spliterator();
+        }
+
+        @Override
+        public boolean removeIf(Predicate<? super E> filter)
+        {
+            return this.delegate.removeIf(filter);
+        }
+
+        @Override
+        public Iterator<E> iterator()
+        {
+            throw new AssertionError("No iteration patterns should delegate to iterator()");
+        }
+
+        @Override
+        public Object[] toArray()
+        {
+            return this.delegate.toArray();
+        }
+
+        @Override
+        public <T> T[] toArray(T[] a)
+        {
+            return this.delegate.toArray(a);
+        }
+
+        @Override
+        public boolean add(E e)
+        {
+            return this.delegate.add(e);
+        }
+
+        @Override
+        public boolean remove(Object o)
+        {
+            return this.delegate.remove(o);
+        }
+
+        @Override
+        public boolean containsAll(Collection<?> c)
+        {
+            return this.delegate.containsAll(c);
+        }
+
+        @Override
+        public boolean addAll(Collection<? extends E> c)
+        {
+            return this.delegate.addAll(c);
+        }
+
+        @Override
+        public boolean removeAll(Collection<?> c)
+        {
+            return this.delegate.removeAll(c);
+        }
+
+        @Override
+        public boolean retainAll(Collection<?> c)
+        {
+            return this.delegate.retainAll(c);
+        }
+
+        @Override
+        public void clear()
+        {
+            this.delegate.clear();
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            return this.delegate.equals(obj);
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return this.delegate.hashCode();
+        }
+
+        @Override
+        public String toString()
+        {
+            return this.delegate.toString();
         }
     }
 }
