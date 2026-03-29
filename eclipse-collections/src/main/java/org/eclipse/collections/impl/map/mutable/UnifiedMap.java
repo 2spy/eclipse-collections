@@ -1456,11 +1456,21 @@ public class UnifiedMap<K, V> extends AbstractMutableMap<K, V>
     @Override
     public Set<Entry<K, V>> entrySet()
     {
-        return new UnifiedMapEntrySet<>(this);
+        return this.newEntrySetView();
     }
 
     @Override
     public Set<K> keySet()
+    {
+        return this.newKeySetView();
+    }
+
+    protected Set<Entry<K, V>> newEntrySetView()
+    {
+        return new UnifiedMapEntrySet<>(this);
+    }
+
+    protected Set<K> newKeySetView()
     {
         return new UnifiedMapKeySet<>(this);
     }

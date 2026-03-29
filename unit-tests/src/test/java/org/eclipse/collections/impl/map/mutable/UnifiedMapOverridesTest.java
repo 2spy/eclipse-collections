@@ -11,13 +11,20 @@
 package org.eclipse.collections.impl.map.mutable;
 
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.collections.api.map.MutableMap;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class UnifiedMapOverridesTest extends UnifiedMapTest
 {
     public static class UnifiedMapOverrides<K, V> extends UnifiedMap<K, V>
     {
+        private boolean keySetViewCreated;
+        private boolean entrySetViewCreated;
+
         public UnifiedMapOverrides()
         {
         }
@@ -56,6 +63,30 @@ public class UnifiedMapOverridesTest extends UnifiedMapTest
         {
             return new UnifiedMapOverrides<>(capacity, this.loadFactor);
         }
+
+        @Override
+        protected Set<K> newKeySetView()
+        {
+            this.keySetViewCreated = true;
+            return super.newKeySetView();
+        }
+
+        @Override
+        protected Set<Entry<K, V>> newEntrySetView()
+        {
+            this.entrySetViewCreated = true;
+            return super.newEntrySetView();
+        }
+
+        public boolean isKeySetViewCreated()
+        {
+            return this.keySetViewCreated;
+        }
+
+        public boolean isEntrySetViewCreated()
+        {
+            return this.entrySetViewCreated;
+        }
     }
 
     @Override
@@ -90,5 +121,29 @@ public class UnifiedMapOverridesTest extends UnifiedMapTest
     {
         UnifiedMap<K, V> map = this.newMap();
         return map.withKeysValues(key1, value1, key2, value2, key3, value3, key4, value4);
+    }
+
+    @Test
+    public void keySet_usesFactoryMethodAndPreservesBehavior()
+    {
+        UnifiedMapOverrides<String, Integer> map = new UnifiedMapOverrides<>();
+        map.put("a", 1);
+
+        Set<String> keys = map.keySet();
+
+        assertTrue(keys.contains("a"));
+        assertTrue(map.isKeySetViewCreated());
+    }
+
+    @Test
+    public void entrySet_usesFactoryMethodAndPreservesBehavior()
+    {
+        UnifiedMapOverrides<String, Integer> map = new UnifiedMapOverrides<>();
+        map.put("a", 1);
+
+        Set<Map.Entry<String, Integer>> entries = map.entrySet();
+
+        assertTrue(entries.contains(Map.entry("a", 1)));
+        assertTrue(map.isEntrySetViewCreated());
     }
 }
